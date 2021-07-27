@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # author: pinakinathc
-# Reference: github.com/yalesong/pvse.git
 
 import torch
 import torch.nn as nn
 import torch.nn.init
-import torchtext
 import torchvision
 from torch.autograd import Variable
+
 
 def get_cnn(arch, pretrained):
   return torchvision.models.__dict__[arch](pretrained=pretrained) 
@@ -17,6 +16,16 @@ def l2norm(x):
   """L2-normalize columns of x"""
   norm = torch.pow(x, 2).sum(dim=-1, keepdim=True).sqrt()
   return torch.div(x, norm)
+
+
+def get_pad_mask(max_length, lengths, set_pad_to_one=True):
+  ind = torch.arange(0, max_length).unsqueeze(0)
+  if torch.cuda.is_available():
+    ind = ind.cuda()
+  mask = Variable((ind >= lengths.unsqueeze(1))) if set_pad_to_one \
+    else Variable((ind < lengths.unsqueeze(1)))
+  return mask.cuda() if torch.cuda.is_available() else mask
+
 
 class MultiHeadSelfAttention(nn.Module):
   """Self-attention module by Lin, Zhouhan, et al. ICLR 2017"""
@@ -76,22 +85,6 @@ class PIENet(nn.Module):
     return out, attn, residual
 
 
-class PVSE(nn.Module):
-  """Polysemous Visual-Semantic Embedding (PVSE) module"""
-
-  def __init__(self, opt):
-    super(PVSE, self).__init__()
-
-    self.mil = opt.num_embeds > 1
-    self.img_enc = EncoderImage(opt)
-    self.sk_enc = EncoderImage(opt)
-
-  def forward(self, sketch, image):
-    sk_emb, sk_attn, sk_residual, sk_map = self.sk_enc(Variable(sketch))
-    img_emb, img_attn, img_residual, img_map = self.sk_enc(Variable(image))
-    return sk_emb, img_emb, sk_map, img_map, sk_residual, img_residual
-
-
 class EncoderImage(nn.Module):
 
   def __init__(self, opt):
@@ -136,7 +129,7 @@ class EncoderImage(nn.Module):
       out, attn, residual = self.pie_net(out, out_7x7.transpose(1,2))
     
     out = l2norm(out)
-    if self.abs:
-      out = torch.abs(out)
+    # if self.abs:
+    #   out = torch.abs(out)
 
-    return out, attn, residual, out_7x7
+    return out, attn, residual
