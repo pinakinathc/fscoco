@@ -1,14 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from network import VGG_Network
+from cnn_baseline.network import VGG_Network
 import pytorch_lightning as pl
 
 class TripletNetwork(pl.LightningModule):
 
     def __init__(self):
         super().__init__()
-        self.embedding_network = VGG_Network()
+        self.sk_embedding_network = VGG_Network()
+        self.img_embedding_network = VGG_Network()
         self.loss = nn.TripletMarginLoss(margin=0.2)
 
     def forward(self, x):
@@ -16,15 +17,15 @@ class TripletNetwork(pl.LightningModule):
         return feature
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.embedding_network.parameters(), lr=1e-4)
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
         return optimizer
 
     def training_step(self, batch, batch_idx):
         # defines the train loop
         sk_tensor, img_tensor, neg_tensor = batch
-        sk_feature = self.embedding_network(sk_tensor)
-        img_feature = self.embedding_network(img_tensor)
-        neg_feature = self.embedding_network(neg_tensor)
+        sk_feature = self.sk_embedding_network(sk_tensor)
+        img_feature = self.img_embedding_network(img_tensor)
+        neg_feature = self.img_embedding_network(neg_tensor)
         loss = self.loss(sk_feature, img_feature, neg_feature)
         self.log('train_loss', loss)
         return loss
@@ -32,9 +33,9 @@ class TripletNetwork(pl.LightningModule):
     def validation_step(self, val_batch, batch_idx):
         # defines the validation loop
         sk_tensor, img_tensor, neg_tensor = val_batch
-        sk_feature = self.embedding_network(sk_tensor)
-        img_feature = self.embedding_network(img_tensor)
-        neg_feature = self.embedding_network(neg_tensor)
+        sk_feature = self.sk_embedding_network(sk_tensor)
+        img_feature = self.img_embedding_network(img_tensor)
+        neg_feature = self.img_embedding_network(neg_tensor)
         loss = self.loss(sk_feature, img_feature, neg_feature)
         self.log('val_loss', loss)
         return sk_feature, img_feature
