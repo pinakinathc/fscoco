@@ -2,7 +2,7 @@
 Dataset Paper:
 ------------------------
 
-A retrieval framework for partial sketches possible multiple labels
+A retrieval framework for sketches possible multiple labels
 
 List of experiments:
 
