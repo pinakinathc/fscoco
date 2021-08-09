@@ -10,7 +10,7 @@ List of experiments:
 
 - Homogenous CNN Top1 and Top10 for full sketch retrieval [Done]: top-1 19.57% top-10 47.82
 
-- Heterogenous CNN Top1 and Top10 for full sketch retrieval
+- Heterogenous CNN Top1 and Top10 for full sketch retrieval[Done]: top-1 15.44% top-10 44.11%
 
 - Top1 and Top10 for text retrieval
 
@@ -29,7 +29,21 @@ Current Experiments:
 
 - version_0: Homogeneous CNN with Top1 and Top10 retrieval result
 
-- version_2: Heterogenous CNN with Top1 and Top10 retrieval result
+- version_1: Heterogenous CNN with Top1 and Top10 retrieval result
+
+- version_2: Text-based Image Retrieval with GRU using our captions
+
+- version_3: Text-based Image Retrieval with GRU using COCO captions
+
+- version_4: Sketch+Text (concat) based Image Retrieval
+
+- version_5: Sketch+Text (additive) based Image Retrieval
+
+- version_6: Recap of version_0 to see if further improvement is possible
+
+- version_7: checking version_0 using copy of code from version_4
+
+- version_8: Text-based Image Retrieval with GRU with 2 num_layers
 
 
 ------------------------------------

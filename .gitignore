@@ -1,6 +1,6 @@
 # Baseline Experiments
 baselines/*
-*/logs/*
+*logs/*
 */.*
 data/*
 
