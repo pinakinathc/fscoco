@@ -18,28 +18,20 @@ class OursScene(torch.utils.data.Dataset):
         self.return_orig = return_orig
         self.max_len = max_len
         self.use_coco = use_coco
-
-        self.all_image_files = glob.glob(os.path.join(
-            self.opt.root_dir, 'images', '*', '*.jpg'))
-
-        self.all_ids = sorted([os.path.split(idx)[-1][:-4]
-            for idx in glob.glob(os.path.join(
-                self.opt.root_dir, 'text', '*', '*.txt'))])
-
-        split = int(len(self.all_ids) * 0.7)
+        self.mode = mode
 
         if mode == 'train':
-            self.all_ids = self.all_ids[:split]
+            self.all_image_files = glob.glob('/vol/research/sketchcaption/datasets/COCO-stuff/images/train2017/*.jpg')
         else:
-            self.all_ids = self.all_ids[split:]
+            self.all_image_files = glob.glob('/vol/research/sketchcaption/datasets/COCO-stuff/images/val2017/*.jpg')
+
+        self.all_ids = [os.path.split(x)[-1][:-4] for x in self.all_image_files]
 
         word_corpus = json.load(open(os.path.join(self.opt.root_dir, 'coco.json')))
 
-        if self.use_coco:
-            print ('using COCO captions for %s set'%mode)
-            self.coco_anns = {}
-            for ann in word_corpus['images']:
-                self.coco_anns[ann['cocoid']] = ann['sentences'][0]['raw']
+        self.coco_anns = {}
+        for ann in word_corpus['images']:
+            self.coco_anns[ann['cocoid']] = ann['sentences'][0]['raw']
 
         word_map = [tokens['tokens'] for sentences in word_corpus['images']
                                         for tokens in sentences['sentences']]
@@ -60,17 +52,19 @@ class OursScene(torch.utils.data.Dataset):
     def __getitem__(self, index):
         filename = self.all_ids[index]
 
-        text_file = glob.glob(os.path.join(self.opt.root_dir, 'text', '*', '%s.txt'%filename))[0]
-        image_file = glob.glob(os.path.join(self.opt.root_dir, 'images', '*', '%s.jpg'%filename))[0]
-        negative_file = np.random.choice(self.all_image_files, 1)[0]
+        local_state = np.random.RandomState()
 
-        assert os.path.split(text_file)[-1][:-4] == os.path.split(image_file)[-1][:-4], ValueError('file mismatch')
+        if self.mode == 'train':
+            image_file = os.path.join('/vol/research/sketchcaption/datasets/COCO-stuff/images/train2017/', '%s.jpg'%filename)
+            negative_shirtname  = local_state.choice(self.all_ids, 1)[0]
+            negative_file = os.path.join('/vol/research/sketchcaption/datasets/COCO-stuff/images/train2017/', '%s.jpg'%negative_shirtname)
+        else:
+            image_file = os.path.join('/vol/research/sketchcaption/datasets/COCO-stuff/images/val2017/', '%s.jpg'%filename)
+            negative_shirtname  = local_state.choice(self.all_ids, 1)[0]
+            negative_file = os.path.join('/vol/research/sketchcaption/datasets/COCO-stuff/images/val2017/', '%s.jpg'%negative_shirtname)
 
         # captions from our dataset
-        if self.use_coco:
-            text_data = word_tokenize(self.coco_anns[int(filename)].lower())[:self.max_len]
-        else:
-            text_data = word_tokenize(open(text_file, 'r+', encoding='utf-8').read().lower())[:self.max_len]
+        text_data = word_tokenize(self.coco_anns[int(filename)].lower())[:self.max_len]
 
         image_data = Image.open(image_file).convert('RGB')
         negative_data = Image.open(negative_file).convert('RGB')
@@ -112,7 +106,7 @@ if __name__ == '__main__':
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    dataset = OursScene(opts, mode='train',
+    dataset = OursScene(opts, mode='val',
         transform=dataset_transforms, return_orig=True, use_coco=True)
 
     for idx, (txt_tensor, txt_length, img_tensor, neg_tensor,

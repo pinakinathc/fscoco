@@ -1,27 +1,29 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from src.check_sbir_baseline.network import VGG_Network, Txt_Encoder, Combine_Network
+from network import VGG_Network, Txt_Encoder, Combine_Network
 import pytorch_lightning as pl
 
 class TripletNetwork(pl.LightningModule):
 
-    def __init__(self, vocab_size, combine_type='concat'):
+    def __init__(self):
         super().__init__()
         self.img_embedding_network = VGG_Network()
+        # self.img_embedding_network = pvt_v2.pvt_v2_b0(pretrained=True, num_classes=0)
         self.loss = nn.TripletMarginLoss(margin=0.2)
+        self.batch_size=1
 
     def forward(self, x):
         feature = self.embedding_network(x)
         return feature
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
 
     def training_step(self, batch, batch_idx):
         # defines the train loop
-        txt_tensor, txt_length, sk_tensor, img_tensor, neg_tensor = batch
+        sk_tensor, img_tensor, neg_tensor = batch
         sk_feature = self.img_embedding_network(sk_tensor)
         img_feature = self.img_embedding_network(img_tensor)
         neg_feature = self.img_embedding_network(neg_tensor)
@@ -32,7 +34,8 @@ class TripletNetwork(pl.LightningModule):
 
     def validation_step(self, val_batch, batch_idx):
         # defines the validation loop
-        txt_tensor, txt_length, sk_tensor, img_tensor, neg_tensor = val_batch
+        sk_tensor, img_tensor, neg_tensor = val_batch
+
         sk_feature = self.img_embedding_network(sk_tensor)
         img_feature = self.img_embedding_network(img_tensor)
         neg_feature = self.img_embedding_network(neg_tensor)
@@ -53,6 +56,18 @@ class TripletNetwork(pl.LightningModule):
                 query_feature.unsqueeze(0), image_feature_all[idx].unsqueeze(0))
             rank[idx] = distance.le(target_distance).sum()
 
-        self.log('top1', rank.le(1).sum().numpy() / rank.shape[0])
-        self.log('top10', rank.le(10).sum().numpy() / rank.shape[0])
-        self.log('meanK', rank.mean().numpy())
+
+        rank1 = rank.le(1).sum().numpy() / rank.shape[0]
+        rank5 = rank.le(5).sum().numpy() / rank.shape[0]
+        rank10 = rank.le(10).sum().numpy() / rank.shape[0]
+        rankM = rank.mean().numpy()
+
+        print ('Metrics -- rank1: {}, rank5: {}, rank10: {}, meanK: {}'.format(
+            rank1, rank5, rank10, rankM))
+
+        self.log('top1', rank1)
+        self.log('top5', rank5)
+        self.log('top10', rank10)
+        self.log('meanK', rankM)
+        
+        return rank1, rank5, rank10, rankM
