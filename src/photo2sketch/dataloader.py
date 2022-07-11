@@ -35,9 +35,6 @@ class OursScene(torch.utils.data.Dataset):
 
         val_ids = np.loadtxt(os.path.join(self.opt.root_dir, 'val_normal.txt'), dtype=str)
 
-        # overfit on 10 pairs
-        self.all_ids = val_ids[:10]
-
         # evaluate
         # train_ids = np.loadtxt(os.path.join('output', 'train_ids.txt'), dtype=str)
         # val_ids = np.loadtxt(os.path.join('output', 'val_ids.txt'), dtype=str)
@@ -51,11 +48,11 @@ class OursScene(torch.utils.data.Dataset):
         # with open ('output_small/val_ids.txt', 'w') as fp:
         #     fp.write('\n'.join(val_ids))
 
-        # if mode == 'train':
-        #     self.all_ids = list(set(self.all_ids) - set(val_ids))
-        # else:
-        #     # self.all_ids = val_ids
-        #     self.all_ids = self.all_ids
+        if mode == 'train':
+            self.all_ids = list(set(self.all_ids) - set(val_ids))
+        else:
+            # self.all_ids = val_ids
+            self.all_ids = self.all_ids
 
     def __len__(self):
         return len(self.all_ids)
