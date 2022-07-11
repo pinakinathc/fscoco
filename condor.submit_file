@@ -43,7 +43,7 @@ request_memory = 8000
 
 #This job will complete in less than 1 hours
 #NB interactive jobs are limited to 4 hours
-+JobRunTime = 4
++JobRunTime = 72
 
 #This job can checkpoint
 +CanCheckpoint = true
