@@ -1,6 +1,5 @@
 <a href="http://sketchx.ai/"><img src="https://pinakinathc.github.io/assets/images/organizations/sketchx-logo.png" style="width:70%; max-width: 300px; border:None;" class='img-fluid img-thumbnail'></a><br/><br/>
 
-
 ## **FS-COCO: Towards Understanding of Freehand Sketches of Common Objects in Context.**
 
 ---
@@ -13,6 +12,8 @@ SketchX, Center for Vision Speech and Signal Processing
 University of Surrey, United Kingdom
 
 **Published at ECCV 2022**
+
+[Paper](http://www.pinakinathc.me/assets/papers/fscoco.pdf) / [Github](https://github.com/pinakinathc/fscoco)
 
 ### **Abstract**
 We advance sketch research to scenes with the first dataset of freehand scene sketches, FS-COCO. With practical applications in mind, we collect sketches that convey well scene content but can be sketched within a few minutes by a person with any sketching skills. Our dataset comprises 10,000 freehand scene vector sketches with per point space-time information by 100 non-expert individuals, offering both object- and scene-level abstraction. Each sketch is augmented with its text description. Using our dataset, we study for the first time the problem of fine-grained image retrieval from freehand scene sketches and sketch captions. We draw insights on: (i) Scene salience encoded in sketches using the strokes temporal order; (ii) Performance comparison of image retrieval from a scene sketch and an image caption; (iii) Complementarity of information in sketches and image captions, as well as the potential benefit of combining the two modalities. In addition, we extend a popular vector sketch LSTM-based encoder to handle sketches with larger complexity than was supported by previous work. Namely, we propose a hierarchical sketch decoder, which we leverage at a sketch-specific “pre-text” task. Our dataset enables for the first time research on freehand scene sketch understanding and its practical applications
@@ -52,9 +53,19 @@ For our dataset, we compute two estimates of the category distribution across ou
         <td>866/6789</td>
     </tr>
 </table>
+<style>
+table, th, td {
+  border: 1px solid black;
+  text-align: center;
+  padding: 15px;
+}
+tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+</style>
 
 ### **Dataset Sample and Comparison with existing dataset.**
-![Sample Comparison FSCOCO dataset](https://pinakinathc.github.io/datasets/images/fscoco-sample-comparison.jpg)
+![Sample Comparison FSCOCO dataset](/assets/fscoco-sample-comparison.jpg)
 
 ## **Code**
 
@@ -97,19 +108,18 @@ Downloading this dataset means you agree to the following License / Terms of Use
 
 ### **How to cite this dataset**
 ```
-@article{fscoco,
+@inproceedings{fscoco,
     title={FS-COCO: Towards Understanding of Freehand Sketches of Common Objects in Context.}
     author={Chowdhury, Pinaki Nath and Sain, Aneeshan and Bhunia, Ayan Kumar and Xiang, Tao and Gryaditskaya, Yulia and Song, Yi-Zhe},
-    journal={arXiv preprint arXiv:2203.02113},
+    booktitle={ECCV},
     year={2022}
 }
 ```
 
 ### **Download this dataset**
 
-Please send an email to mail@pinakinathc.me for the unZip password.
-
-[**Download from Google Drive**](https://drive.google.com/file/d/1f4dEYbWL05Jwlr8KKdXXJioKZWcvaTJG/view?usp=sharing)
+[**[Official Storage]**](http://cvssp.org/data/fscoco/fscoco.tar.gz)
+[**[Backup Storage]**](https://drive.google.com/file/d/1sjWoONedi9PBK4aQFNJUEL7diFJ7FyIN/view?usp=sharing)
 
 ### **Acknowledgements**
 This dataset would not be possible without the support of the following wonderful people:
