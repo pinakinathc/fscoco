@@ -53,16 +53,6 @@ For our dataset, we compute two estimates of the category distribution across ou
         <td>866/6789</td>
     </tr>
 </table>
-<style>
-table, th, td {
-  border: 1px solid black;
-  text-align: center;
-  padding: 15px;
-}
-tr:nth-child(odd) {
-  background-color: #f2f2f2;
-}
-</style>
 
 ### **Dataset Sample and Comparison with existing dataset.**
 ![Sample Comparison FSCOCO dataset](/assets/fscoco-sample-comparison.jpg)
