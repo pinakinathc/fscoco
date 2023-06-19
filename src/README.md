@@ -1,3 +1,5 @@
+Disclaimer: This is my research code, hence there could be additional lines commented out, or things like training epoch is way too high. Do not treat it as a production level code with proper polish and documentation. Also, check the code carefully if using on something important, as it might break things.
+
 ## Experiments Structure Description
 
 - `clip_sbir` -- performs SBIR using CLIP with ViT architecture. Inside the ViT architecture, we train only the `LayerNorm` parameters while keeping the rest frozen.
